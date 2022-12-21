@@ -391,11 +391,11 @@ class tourOperatorBlogsController extends Controller
             ->select(
             [
                 'tour_operators_blogs.blog_topic as blog_topic',
-                'tour_operators_blogs.topic_description as topic_description',
                 'tour_operators_blogs.visit_cost_local as visit_cost_local',
                 'tour_operators_blogs.visit_cost_foreigner as visit_cost_foreigner',
                 'attraction.id as attraction_id',
                 'attraction.attraction_name as attraction_name',
+                'attraction.description as description',
                 'tour_operators_blogs.status as status',
                 'tour_operators_blogs.uuid as uuid',
                 'tour_operators_blogs.blog_topic_image',
@@ -415,7 +415,7 @@ class tourOperatorBlogsController extends Controller
     {
         $search_blog=request()->all();
         $tour_operator_blogs=$this->getAllBlogsForSearch()->where('attraction.attraction_name','LIKE','%'.$search_blog['search'].'%')
-            ->orWhere('tour_operators_blogs.topic_description','LIKE','%'.$search_blog['search'].'%')
+            ->orWhere('attraction.description','LIKE','%'.$search_blog['search'].'%')
             ->orWhere('operator.company_name','LIKE','%'.$search_blog['search'].'%')
             ->get();
         return view('tourOperatorBlogs.search_results',compact('tour_operator_blogs'));

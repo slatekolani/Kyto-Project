@@ -110,7 +110,7 @@
                                                                             <h3 style="color:black;"><b>{{\App\Models\touristAttraction\touristAttraction::find($tour_operator_blog->blog_topic)->attraction_name}}</b></h3>
                                                                         </div>
                                                                         <div class="description">
-                                                                            <p>{{$tour_operator_blog->topic_description}}</p>
+                                                                            <p>{{\App\Models\touristAttraction\touristAttraction::find($tour_operator_blog->blog_topic)->description}}</p>
                                                                             <div style="display: inline-flex">
                                                                                     <span>Tanzanian: <span style="color: goldenrod">{{number_format($tour_operator_blog->visit_cost_local)}} shillings </span>~
                                                                                     </span>
