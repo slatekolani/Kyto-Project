@@ -281,7 +281,7 @@
                                        onclick="alert('Please get a touristic account to book or log in to your account')"
                                        title="not legible, get a touristic account" class="btn btn-primary btn-sm">Book
                                         normal</a>
-                                    <a href="{{route('touristBookings.soloBookings.create',$tour_operator_blog->uuid)}}"
+                                    <a href="{{route('soloBookings.create',$tour_operator_blog->uuid)}}"
                                        onclick="alert('Please get a touristic account to book or log in to your account')"
                                        title="not legible, get a touristic account" class="btn btn-primary btn-sm">Book
                                         Solo</a>
