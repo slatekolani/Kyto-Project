@@ -1,0 +1,114 @@
+@extends('layouts.main', ['title' => trans('Solo Trip Bookings'), 'header' => trans('Solo Trip Bookings')])
+
+@include('includes.datatable_assets')
+@push('after-styles')
+    {{ Html::style(url('vendor/sweetalert/sweetalert.css')) }}
+
+    <style>
+
+    </style>
+@endpush
+@section('content')
+    <div class="row">
+        <div class="col-md-4">
+            <div class="list-group">
+                <ul class="list-unstyled">
+                    <a href="#" class="list-group-item list-group-item-action">
+                        <h5 class="list-group-item-heading"><i class="fas fa-clipboard"></i> {{ __('Verified Trips') }} ~  </h5>
+                        <p>To see, search <span class="badge badge-success">confirmed</span></p>
+                    </a>
+                </ul>
+            </div>
+        </div>
+
+        <div class="col-md-4">
+            <div class="list-group">
+                <ul class="list-unstyled">
+                    <a href="#" class="list-group-item list-group-item-action">
+                        <h5 class="list-group-item-heading"><i class="fas fa-clipboard"></i> {{ __('Unverified Trips') }} ~ </h5>
+                        <p>To see, search <span class="badge badge-warning">Unconfirmed</span></p>
+                    </a>
+                </ul>
+            </div>
+        </div>
+
+        <div class="col-md-4">
+            <div class="list-group">
+                <ul class="list-unstyled">
+                    <a href="#" class="list-group-item list-group-item-action">
+                        <h5 class="list-group-item-heading"><i class="fas fa-clipboard"></i> {{ __('Unchecked Transactions') }} ~ </h5>
+                        <p>To see, search <span class="badge badge-info">unchecked</span></p>
+                    </a>
+                </ul>
+            </div>
+        </div>
+
+        <div class="col-md-4">
+            <div class="list-group">
+                <ul class="list-unstyled">
+                    <a href="#" class="list-group-item list-group-item-action">
+                        <h5 class="list-group-item-heading"><i class="fas fa-clipboard"></i> {{ __('Checked Transactions') }} ~ </h5>
+                        <p>To see, search <span class="badge badge-success">complete</span></p>
+                    </a>
+                </ul>
+            </div>
+        </div>
+
+{{--        <div class="col-md-4">--}}
+{{--            <div class="list-group">--}}
+{{--                <ul class="list-unstyled">--}}
+{{--                    <a href="{{route('touristBookings.recent_trips_to_be_conducted_index',$tour_operator->uuid)}}" class="list-group-item list-group-item-action">--}}
+{{--                        <h5 class="list-group-item-heading"><i class="fas fa-clipboard"></i> {{ __('Trips to be conducted on')}}</h5>--}}
+{{--                        <p><span class="badge badge-light">{{date('F , Y')}}</span></p>--}}
+{{--                    </a>--}}
+{{--                </ul>--}}
+{{--            </div>--}}
+{{--        </div>--}}
+
+{{--        <div class="col-md-4">--}}
+{{--            <div class="list-group">--}}
+{{--                <ul class="list-unstyled">--}}
+{{--                    <a href="{{route('touristBookings.overview',$tour_operator->uuid)}}" class="list-group-item list-group-item-action">--}}
+{{--                        <h5 class="list-group-item-heading"><i class="fas fa-clipboard"></i> {{ __('Bookings Overview') }}</h5>--}}
+{{--                    </a>--}}
+{{--                </ul>--}}
+{{--            </div>--}}
+{{--        </div>--}}
+
+{{--        <div class="col-md-4">--}}
+{{--            <div class="list-group">--}}
+{{--                <ul class="list-unstyled">--}}
+{{--                    <a href="{{route('touristBookings.recent_bookings_index',$tour_operator->uuid)}}" class="list-group-item list-group-item-action">--}}
+{{--                        <h5 class="list-group-item-heading"><i class="fas fa-clipboard"></i> {{ __('Recent Bookings') }} </h5>--}}
+{{--                    </a>--}}
+{{--                </ul>--}}
+{{--            </div>--}}
+{{--        </div>--}}
+
+{{--        <div class="col-md-4">--}}
+{{--            <div class="list-group">--}}
+{{--                <ul class="list-unstyled">--}}
+{{--                    <a href="{{route('payments.recent_payments_index',$tourist_booking->uuid)}}" class="list-group-item list-group-item-action">--}}
+{{--                        <h5 class="list-group-item-heading"><i class="fas fa-clipboard"></i> {{ __('Recent Transactions') }}</h5>--}}
+{{--                    </a>--}}
+{{--                </ul>--}}
+{{--            </div>--}}
+{{--        </div>--}}
+
+
+    </div>
+    <div class="row" style="overflow-x: scroll">
+        <div class="col-md-12">
+            <section class="card card-primary mb-4" style="width:300%">
+
+                @include('touristBookings.SoloBookings.get_solo_bookings')
+            </section>
+        </div>
+
+    </div>
+
+@endsection
+
+@push('after-scripts')
+    {{ Html::script(url('vendor/sweetalert/sweetalert.min.js')) }}
+@endpush
