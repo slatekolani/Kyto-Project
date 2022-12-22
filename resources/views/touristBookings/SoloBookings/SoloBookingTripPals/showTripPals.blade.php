@@ -64,12 +64,18 @@
                     <div class="list-group">
                         <ul class="list-unstyled">
                             <a href="#" class="list-group-item list-group-item-action">
-                                <h5 class="list-group-item-heading" style="font-family: sans-serif, Verdana"><i class="fas fa-clipboard"></i>Countdown Days: {{$solo_bookings->number_of_solo_trips_label}} days</h5>
+                                <h5 class="list-group-item-heading" style="font-family: sans-serif, Verdana"><i class="fas fa-clipboard"></i>Countdown Days: {{$solo_bookings->NumberOfDaysRemainedForSoloTripLabel}} </h5>
+                                @if($solo_bookings->NumberOfDaysRemainedForSoloTripLabel < 1)
+                                    <p><span class="badge badge-success">Proceed with Payments</span></p>
+                                @else
+                                    <p><span class="badge badge-danger">Out of Range. Contact the tour operator for an extension</span></p>
+                                @endif
                             </a>
                         </ul>
                     </div>
                 </div>
             </div>
+
 
 
 
