@@ -72,9 +72,13 @@ class soloTouristAccountInformationController extends Controller
      * @param  int  $id
      * @return \Illuminate\Http\Response
      */
-    public function edit($id)
+    public function edit($solo_tourist_account_information_id)
     {
-        //
+        $payment_gateway=paymentGateways::all()->pluck('payment_gateway_name','id');
+        $solo_tourist_account_information=soloTouristAccountInformation::query()->where('uuid',$solo_tourist_account_information_id)->first();
+        return view('touristBookings.soloBookings.soloTouristAccountInformation.edit')
+            ->with('payment_gateway',$payment_gateway)
+            ->with('solo_tourist_account_information',$solo_tourist_account_information);
     }
 
     /**
@@ -84,9 +88,15 @@ class soloTouristAccountInformationController extends Controller
      * @param  int  $id
      * @return \Illuminate\Http\Response
      */
-    public function update(Request $request, $id)
+    public function update(Request $request, $solo_tourist_account_information_id)
     {
-        //
+        $solo_tourist_account_information=soloTouristAccountInformation::query()->where('uuid',$solo_tourist_account_information_id)->first();
+        $solo_tourist_account_information->payment_gateway=$request->input('payment_gateway');
+        $solo_tourist_account_information->account_name=$request->input('account_name');
+        $solo_tourist_account_information->account_number=$request->input('account_number');
+        $solo_tourist_account_information->solo_bookings_id=$request->input('solo_bookings_id');
+        $solo_tourist_account_information->save();
+        return redirect()->route('soloTouristAccountInformation.show',$solo_tourist_account_information->soloBookings->uuid)->withFlashSuccess('Account Information updated successfully');
     }
 
     /**
@@ -95,8 +105,9 @@ class soloTouristAccountInformationController extends Controller
      * @param  int  $id
      * @return \Illuminate\Http\Response
      */
-    public function destroy($id)
+    public function destroy(soloTouristAccountInformation $tourist_account_information)
     {
-        //
+        $tourist_account_information->delete();
+        return redirect()->route('soloTouristAccountInformation.show',$tourist_account_information->soloBookings->uuid)->withFlashSuccess('Account Information deleted successfully');
     }
 }

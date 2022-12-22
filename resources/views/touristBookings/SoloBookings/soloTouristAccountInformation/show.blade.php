@@ -49,8 +49,8 @@
                                                 @endif
                                             </td>
                                             <td>
-                                                <a href="#" class="btn btn-primary btn-sm">Update</a>
-                                                <a href="#" class="btn btn-danger btn-sm">Delete</a>
+                                                <a href="{{route('soloTouristAccountInformation.edit',$solo_tourist_account_information->uuid)}}" class="btn btn-primary btn-sm">Update</a>
+                                                <a href="{{route('soloTouristAccountInformation.delete',$solo_tourist_account_information->uuid)}}" class="btn btn-danger btn-sm">Delete</a>
                                             </td>
                                         </tr>
                                         </tbody>

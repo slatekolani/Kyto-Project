@@ -9,7 +9,7 @@ Route::group([
     Route::group([ 'prefix' => 'soloBookings',  'as' => 'soloBookings.'], function() {
         Route::get('/index/{tour_operator}', 'soloBookingsController@index')->name('index');
         Route::get('/create/{tour_operator}', 'soloBookingsController@create')->name('create');
-        Route::get('/get_solo_bookings/{tour_operator}', 'soloBookingsController@get_solo_bookings')->name('get_solo_bookings');
+        Route::get('/get_solo_bookings/{tour_operator}','soloBookingsController@get_solo_bookings')->name('get_solo_bookings');
         Route::post('/store', 'soloBookingsController@store')->name('store');
         Route::get('/show', 'soloBookingsController@show')->name('show');
         Route::get('/search_Trip_booked_solo', 'soloBookingsController@search_Trip_booked_solo')->name('search_Trip_booked_solo');

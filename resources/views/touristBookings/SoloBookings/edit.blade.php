@@ -8,9 +8,9 @@
 
     {{ Form::model($solo_booking,['enctype="multipart/form-data"','route' => ['soloBookings.update', $solo_booking->uuid], 'method'=>'put','autocomplete' => 'off',
           'id' => 'update','class' => 'form-horizontal  needs-validation', 'novalidate']) }}
-    {{ Form::hidden('id', $solo_booking->id, []) }}     <div class="image_container">
-        <img src="{{asset('public/BlogImages/topicImages/'.$solo_booking->tourOperatorsBlogs->blog_topic_image)}}"
-             class="imageBackground" style="height:450px;width:100%">
+    {{ Form::hidden('id', $solo_booking->id, []) }}
+    <div class="image_container">
+        <img src="{{asset('public/BlogImages/topicImages/'.$solo_booking->tourOperatorsBlogs->blog_topic_image)}}" class="imageBackground" style="height:450px;width:100%">
         <div class="text_container">
             <div class="text">
                 <h2 style="color: goldenrod"> {{\App\Models\touristAttraction\touristAttraction::find($solo_booking->tourOperatorsBlogs->blog_topic)->attraction_name}}</h2>

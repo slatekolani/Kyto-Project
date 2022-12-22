@@ -84,7 +84,17 @@
             </ul>
         </div>
     </div>
-
+        @if($tourist_booking==null)
+            <div class="col-md-4">
+                <div class="list-group">
+                    <ul class="list-unstyled">
+                        <button onclick="alert('Please wait for a booking to be made')" class="list-group-item list-group-item-action">
+                            <h5 class="list-group-item-heading"><i class="fas fa-clipboard"></i> {{ __('Recent Transactions') }}</h5>
+                        </button>
+                    </ul>
+                </div>
+            </div>
+        @else
         <div class="col-md-4">
             <div class="list-group">
                 <ul class="list-unstyled">
@@ -94,6 +104,7 @@
                 </ul>
             </div>
         </div>
+        @endif
 
 
     </div>

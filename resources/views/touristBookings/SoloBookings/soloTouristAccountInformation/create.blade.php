@@ -8,7 +8,7 @@
 
     {{ Form::open(['route' => 'soloTouristAccountInformation.store', 'autocomplete' => 'off','method' => 'post', 'class' => 'needs-validation', 'novalidate']) }}
 
-    <i class="fa fa-pencil-alt">Create account for your trip pals to use for payments</i>
+    <i class="fa fa-pencil-alt">Account Information for your trip pals to use for payments</i>
     <section class="card">
         <div class="card-body" style="border: 2px solid gainsboro">
             <p>{{ getLanguageBlock('lang.auth.mandatory-field') }}</p>

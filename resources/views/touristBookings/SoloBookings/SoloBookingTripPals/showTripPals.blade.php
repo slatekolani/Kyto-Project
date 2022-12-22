@@ -76,9 +76,6 @@
                 </div>
             </div>
 
-
-
-
             <div style="position: relative;">
                 <a href="{{route('soloBookingTripPals.create',$solo_bookings->uuid)}}"><i class="fa fa-pen-square">Add Trip Pal</i></a>
                 <span style="float:right;font-family: sans-serif, Verdana">TRIP CODE : <span class="badge badge-light" style="font-size: 15px">{{$solo_bookings->trip_code}} </span></span>
@@ -118,13 +115,13 @@
                                             <td><a href="tel:{{$solo_booking_trip_pal->phone_number}}">{{$solo_booking_trip_pal->phone_number}}</a></td>
                                             <td><a href="mailto:{{$solo_booking_trip_pal->email_address}}">{{$solo_booking_trip_pal->email_address}}</a></td>
                                             @if($solo_booking_trip_pal->soloBookings->tourist_nation==1)
-                                            <td>{{$solo_booking_trip_pal->trip_amount}} shillings</td>
+                                            <td>{{number_format($solo_booking_trip_pal->trip_amount)}} shillings</td>
                                             @else
-                                                <td>$ {{$solo_booking_trip_pal->trip_amount}}</td>
+                                                <td>$ {{number_format($solo_booking_trip_pal->trip_amount)}}</td>
                                             @endif
                                             <td>
-                                                <a href="#" class="btn btn-primary btn-sm">Update</a>
-                                                <a href="#" class="btn btn-danger btn-sm">Delete</a>
+                                                <a href="{{route('soloBookingTripPals.edit',$solo_booking_trip_pal->uuid)}}" class="btn btn-primary btn-sm">Update</a>
+                                                <a href="{{route('soloBookingTripPals.delete',$solo_booking_trip_pal->uuid)}}" class="btn btn-danger btn-sm">Delete</a>
                                             </td>
                                         </tr>
                                         </tbody>

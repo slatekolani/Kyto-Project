@@ -34,7 +34,7 @@ class soloBookings extends BaseModel
     {
         return $this->hasMany(soloTouristAccountInformation::class);
     }
-    public function getNumberOfSoloTripsLabelAttribute()
+    public function getNumberOfDaysRemainedForSoloTripLabelAttribute()
     {
         $solo_booking=soloBookings::find($this->id);
         $start_date=$solo_booking->start_date;
@@ -42,6 +42,12 @@ class soloBookings extends BaseModel
         $datetime1=new \DateTime($start_date);
         $datetime2=new \DateTime($today_date);
         $interval=$datetime1->diff($datetime2);
-        return $interval->format('%d');
+        return $interval->format("%R%a days.");
+    }
+    public function getButtonActionsLabelAttribute()
+    {
+        $btn='<a href="#" class="btn btn-primary btn-sm">Payments</a>';
+        $btn=$btn.'<a href="#" class="btn btn-danger btn-sm">Delete</a>';
+        return $btn;
     }
 }

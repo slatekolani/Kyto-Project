@@ -27,7 +27,7 @@ class soloBookingTripPalsController extends Controller
     public function create($solo_bookings_id)
     {
         $solo_bookings=soloBookings::query()->where('uuid',$solo_bookings_id)->first();
-        return view('touristBookings.soloBookings.addTripPals')
+        return view('touristBookings.soloBookings.SoloBookingTripPals.addTripPals')
             ->with('solo_bookings',$solo_bookings);
     }
 
@@ -58,7 +58,7 @@ class soloBookingTripPalsController extends Controller
     {
         $solo_bookings=soloBookings::query()->where('uuid',$solo_bookings_id)->first();
         $solo_booking_trip_pals=soloBookingTripPals::query()->where('solo_bookings_id',$solo_bookings->id)->get();
-        return view('touristBookings.soloBookings.showTripPals')
+        return view('touristBookings.soloBookings.SoloBookingTripPals.showTripPals')
             ->with('solo_bookings',$solo_bookings)
             ->with('solo_booking_trip_pals',$solo_booking_trip_pals);
     }
@@ -69,9 +69,11 @@ class soloBookingTripPalsController extends Controller
      * @param  int  $id
      * @return \Illuminate\Http\Response
      */
-    public function edit($id)
+    public function edit($solo_booking_trip_pal_id)
     {
-        //
+        $solo_booking_trip_pal=soloBookingTripPals::query()->where('uuid',$solo_booking_trip_pal_id)->first();
+        return view('touristBookings.soloBookings.soloBookingTripPals.edit')
+            ->with('solo_booking_trip_pal',$solo_booking_trip_pal);
     }
 
     /**
@@ -81,9 +83,16 @@ class soloBookingTripPalsController extends Controller
      * @param  int  $id
      * @return \Illuminate\Http\Response
      */
-    public function update(Request $request, $id)
+    public function update(Request $request, $solo_booking_trip_pal)
     {
-        //
+        $solo_booking_trip_pal=soloBookingTripPals::query()->where('uuid',$solo_booking_trip_pal)->first();
+        $solo_booking_trip_pal->tourist_name=$request->input('tourist_name');
+        $solo_booking_trip_pal->phone_number=$request->input('phone_number');
+        $solo_booking_trip_pal->email_address=$request->input('email_address');
+        $solo_booking_trip_pal->trip_amount=$request->input('trip_amount');
+        $solo_booking_trip_pal->solo_bookings_id=$request->input('solo_bookings_id');
+        $solo_booking_trip_pal->save();
+        return redirect()->route('soloBookingTripPals.show',$solo_booking_trip_pal->soloBookings->uuid)->withFlashSuccess('Trip Pal information are updated successfully');
     }
 
     /**
@@ -92,8 +101,9 @@ class soloBookingTripPalsController extends Controller
      * @param  int  $id
      * @return \Illuminate\Http\Response
      */
-    public function destroy($id)
+    public function destroy(soloBookingTripPals $solo_booking_trip_pal)
     {
-        //
+        $solo_booking_trip_pal->delete();
+        return redirect()->route('soloBookingTripPals.show',$solo_booking_trip_pal->soloBookings->uuid)->withFlashSuccess('Trip Pal deleted successfully');
     }
 }

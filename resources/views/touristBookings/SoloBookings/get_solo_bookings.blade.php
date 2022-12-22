@@ -1,7 +1,6 @@
 <table class="table table-hover table-responsive-md" id="solo_trip_bookings_table">
     <thead>
     <tr>
-
         <th>@lang('Trip code')</th>
         <th>@lang('Trip Group')</th>
         <th>@lang('Tourist name')</th>
@@ -12,6 +11,7 @@
         <th>@lang('Start date')</th>
         <th>@lang('End date')</th>
         <th>@lang('Tourist request')</th>
+        <th>@lang('Action')</th>
     </tr>
     </thead>
 </table>
@@ -48,6 +48,7 @@
                     { data: 'start_date', name: 'start_date', orderable: false, searchable: true},
                     { data: 'end_date', name: 'end_date', orderable: false, searchable: true},
                     { data: 'tourist_request', name: 'tourist_request', orderable: false, searchable: false},
+                    { data: 'actions', name: 'actions', orderable: false, searchable: false},
                 ],
                 "fnRowCallback": function (nRow, aData, iDisplayIndex, iDisplayIndexFull) {
                     $(nRow).click(function () {

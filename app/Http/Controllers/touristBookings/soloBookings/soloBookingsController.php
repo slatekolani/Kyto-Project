@@ -180,40 +180,56 @@ class soloBookingsController extends Controller
         $solo_booking=soloBookings::query()->orderBy('tourist_name')->where('tour_operators_id',$tour_operator->id)->get();
         return DataTables::of($solo_booking)
             ->addIndexColumn()
-            ->addColumn('group_travel_category',function ($solo_booking){
-                return $solo_booking->group_travel_category;
-            })
-            ->addColumn('tourist_name',function ($solo_booking){
-                return $solo_booking->tourist_name;
-            })
-            ->addColumn('phone_number',function ($solo_booking){
-                return $solo_booking->phone_number;
-            })
-            ->addColumn('email_address',function ($solo_booking){
-                return $solo_booking->email_address;
-            })
-            ->addColumn('tourist_nation',function($solo_booking){
-                return $solo_booking->tourist_nation;
-            })
-            ->addColumn('number_of_tourists',function ($solo_booking){
-                return $solo_booking->number_of_tourists;
-            })
-            ->addColumn('start_date',function ($solo_booking){
-                return $solo_booking->start_date;
-            })
-            ->addColumn('end_date',function ($solo_booking){
-                return $solo_booking->end_date;
-            })
-            ->addColumn('trip_code',function($solo_booking){
+            ->addColumn('trip_code',function ($solo_booking)
+            {
                 return $solo_booking->trip_code;
             })
-            ->addColumn('tourist_request',function ($solo_booking){
+
+            ->addColumn('group_travel_category',function ($solo_booking)
+            {
+                return $solo_booking->group_travel_category;
+            })
+
+            ->addColumn('tourist_name',function ($solo_booking)
+            {
+                return $solo_booking->tourist_name;
+            })
+            ->addColumn('phone_number',function ($solo_booking)
+            {
+                return $solo_booking->phone_number;
+            })
+            ->addColumn('email_address',function ($solo_booking)
+            {
+                return $solo_booking->email_address;
+            })
+            ->addColumn('tourist_nation',function ($solo_booking)
+            {
+                return MemberNationality::find($solo_booking->tourist_nation)->nation_name;
+            })
+            ->addColumn('number_of_tourists',function($solo_booking)
+            {
+                return $solo_booking->number_of_tourists;
+            })
+            ->addColumn('start_date',function ($solo_booking)
+            {
+                return date('jS M Y, H:m:s',strtotime($solo_booking->start_date));
+            })
+            ->addColumn('end_date',function ($solo_booking)
+            {
+                return date('jS M Y, H:m:s',strtotime($solo_booking->end_date));
+            })
+
+            ->addColumn('tourist_request',function ($solo_booking)
+            {
                 return $solo_booking->tourist_request;
             })
-            ->addColumn('actions',function ($solo_booking){
-               //
+
+            ->addColumn('actions',function ($solo_booking)
+            {
+                return $solo_booking->button_actions_label;
             })
-            ->rawColumns('actions')
+
+            ->rawColumns(['actions','actions'])
             ->make(true);
     }
 }

@@ -135,7 +135,7 @@ class tourOperators extends BaseModel
                 $btn=$btn.'<a href="'.route('tourOperatorProfile.index',$this->uuid).'"><button class="btn btn-primary btn-sm">Profile</button></a>';
                 $btn=$btn.'<a href="'.route('tourOperatorBlogs.index',$this->uuid).'"><button class="btn btn-primary btn-sm">Blog</button></a>';
                 $btn=$btn.'<a href="'.route('touristBookings.index',$this->uuid).'"><button class="btn btn-primary btn-sm">Custom Bookings</button></a>';
-                $btn=$btn.'<a href="'.route('soloBookings.index',$this->uuid).'" class="btn btn-primary btn-sm">Solo Bookings</a>';
+                $btn=$btn.'<a href="'.route('soloBookings.index',$this->uuid).'"><button class="btn btn-primary btn-sm">Solo Bookings</button></a>';
                 $btn=$btn.'<a href="'.route('tourOperatorAccounts.index',$this->uuid).'"><button class="btn btn-primary btn-sm">Account</button></a>';
                 return $btn;
                 break;

@@ -10,6 +10,9 @@ Route::group([
         Route::get('/create/{solo_booking}', 'soloBookingTripPalsController@create')->name('create');
         Route::post('/store', 'soloBookingTripPalsController@store')->name('store');
         Route::get('/show/{solo_booking}', 'soloBookingTripPalsController@show')->name('show');
+        Route::get('/edit/{solo_booking_trip_pal}', 'soloBookingTripPalsController@edit')->name('edit');
+        Route::put('/update/{solo_booking_trip_pal}', 'soloBookingTripPalsController@update')->name('update');
+        Route::get('/delete/{solo_booking_trip_pal}', 'soloBookingTripPalsController@destroy')->name('delete');
 //        Route::get('/search_Trip_booked_solo', 'soloBookingsController@search_Trip_booked_solo')->name('search_Trip_booked_solo');
     });
 
