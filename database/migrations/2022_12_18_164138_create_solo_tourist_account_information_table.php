@@ -24,7 +24,7 @@ class CreateSoloTouristAccountInformationTable extends Migration
             $table->timestamps();
         });
         Schema::table('solo_tourist_account_information',function (Blueprint $table){
-            $table->foreign('solo_bookings_id')->references('id')->on('users')->onUpdate('CASCADE')->onDelete('CASCADE');
+            $table->foreign('solo_bookings_id')->references('id')->on('solo_bookings')->onUpdate('CASCADE')->onDelete('CASCADE');
         });
     }
 

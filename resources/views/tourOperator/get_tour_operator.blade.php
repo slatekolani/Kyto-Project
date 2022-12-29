@@ -15,12 +15,6 @@
         <th>@lang('Activate company')</th>
         @endif
         <th>@lang('status')</th>
-        <th>@lang('Blogs posted')</th>
-        <th>@lang('Blogs verified')</th>
-        <th>@lang('Blogs unverified')</th>
-        <th>@lang('Total bookings')</th>
-        <th>@lang('Bookings verified')</th>
-        <th>@lang('Bookings unverified')</th>
         <th>@lang('Interact')</th>
     </tr>
     </thead>
@@ -89,12 +83,6 @@
                     },
                     @endif
                     { data: 'company_status', name: 'company_status', orderable: true, searchable: true},
-                    { data: 'blog_posted', name: 'blog_posted', orderable: true, searchable: false},
-                    { data: 'blogs_verified', name: 'blogs_verified', orderable: true, searchable: false},
-                    { data: 'blogs_unverified', name: 'blogs_unverified', orderable: true, searchable: false},
-                    { data: 'bookings_made', name: 'bookings_made', orderable: true, searchable: false},
-                    { data: 'bookings_verified', name: 'bookings_verified', orderable: true, searchable: false},
-                    { data: 'bookings_unverified', name: 'bookings_unverified', orderable: true, searchable: false},
                     { data: 'action', name: 'action', orderable: false, searchable: false},
                 ],
                 "fnRowCallback": function (nRow, aData, iDisplayIndex, iDisplayIndexFull) {

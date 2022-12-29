@@ -66,7 +66,7 @@
                                                                     <hr>
 
                                                                     <div class="modal-body">
-                                                                        {{ Form::open([ 'route' => 'soloBookingsPayments.store',  'autocomplete' => 'off','method' => 'post', 'class' => 'needs-validation', 'validate']) }}
+                                                                        {{ Form::open([ 'route' => 'soloBookingPayments.store',  'autocomplete' => 'off','method' => 'post', 'class' => 'needs-validation', 'validate']) }}
                                                                         <div class="form-group" id="">
                                                                             {{ Form::label('account_name', __("Personal account name"), ['class' => 'required_asterik']) }}
                                                                             {{ Form::text('account_name', null, ['class' => 'form-control', 'autocomplete' => 'off', 'id' => 'account_name', 'required']) }}

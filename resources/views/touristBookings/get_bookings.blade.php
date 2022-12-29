@@ -2,6 +2,8 @@
     <thead>
     <tr>
         <th>@lang('Date of booking')</th>
+        <th>@lang('Countdown days')</th>
+        <th>@lang('Countdown days status')</th>
         <th>@lang('Tourist name')</th>
         <th>@lang('Phone number')</th>
         <th>@lang('Email address')</th>
@@ -17,6 +19,7 @@
         <th>@lang('confirmation')</th>
         <th>@lang('# Transactions')</th>
         <th>@lang('# checked transactions')</th>
+        <th>@lang('# unchecked transactions')</th>
         <th>@lang('Payment status')</th>
         <th>@lang('Interact')</th>
     </tr>
@@ -46,6 +49,8 @@
                 ajax: '{{ route('touristBookings.get_bookings',$tour_operator->id) }}',
                 columns: [
                     {data:'booked_time',name:'booked_time',orderable: true,searchable: true},
+                    {data:'countdown_days',name:'countdown_days',orderable: true,searchable: true},
+                    {data:'countdown_days_status',name:'countdown_days_status',orderable: true,searchable: true},
                     { data: 'tourist_name', name: 'tourist_name', orderable: true, searchable: true},
                     { data: 'phone_number', name: 'phone_number', orderable: false, searchable: true},
                     {data:'email_address',name:'email_address',orderable: false,searchable: true},
@@ -79,6 +84,7 @@
                     { data: 'total_number_of_payments', name: 'total_number_of_payments', orderable: true, searchable: true},
                     { data: 'checked_payments', name: 'checked_payments', orderable: true, searchable: true},
                     { data: 'unchecked_payments', name: 'unchecked_payments', orderable: true, searchable: true},
+                    { data: 'payment_status', name: 'payment_status', orderable: true, searchable: true},
                     { data: 'action', name: 'action', orderable: false, searchable: false},
                 ],
                 "fnRowCallback": function (nRow, aData, iDisplayIndex, iDisplayIndexFull) {

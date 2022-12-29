@@ -6,8 +6,7 @@
         <th>@lang('Reference')</th>
         <th>@lang('Payment Gateway')</th>
         <th>@lang('Confirm Payment')</th>
-{{--        <th>@lang('Status')</th>--}}
-        <th>@lang('Status')</th>
+        <th>@lang('Payment status')</th>
         <th>@lang('action')</th>
     </tr>
     </thead>

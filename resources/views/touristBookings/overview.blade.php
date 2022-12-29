@@ -1,4 +1,4 @@
-@extends('layouts.main', ['title' => $tour_operator->company_name, 'header' => 'Company Trip bookings overview'])
+@extends('layouts.main', ['title' => $tour_operator->company_name, 'header' => 'Company Custom Trip bookings overview'])
 
 @include('includes.datatable_assets')
 @push('after-styles')

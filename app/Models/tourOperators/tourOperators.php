@@ -188,6 +188,12 @@ class tourOperators extends BaseModel
         $verified_trips=touristBooking::query()->where('status','=',1)->where('tour_operators_id',$this->id)->count();
         return $verified_trips;
     }
+    public function getTotalSoloBookingsLabelAttribute()
+    {
+        $total_tourist_bookings=touristBooking::query()->where('tour_operators_id',$this->id)->count();
+        return $total_tourist_bookings;
+    }
+
     public function getUnverifiedTripsLabelAttribute()
     {
         $unverified_trips=touristBooking::query()->where('status','=',0)->where('tour_operators_id',$this->id)->count();
@@ -228,12 +234,15 @@ class tourOperators extends BaseModel
         $number_of_inactive_accounts=tourOperatorAccounts::query()->where('status','=',0)->where('tour_operators_id',$this->id)->count();
         return $number_of_inactive_accounts;
     }
-
-//    public function getMonthlyDataLabelAttribute()
-//    {
-//        $monthlydata=touristBooking::query()->where('tour_operators_id',$this->id)->whereBetween('created_at',[carbon::now()->startOfMonth(),carbon::now()->endOfMonth()])->count();
-////        $monthlydata=touristBooking::query()->where('tour_operators_id',$this->id)->whereMonth('created_at',date('m'))->count();
-//        dd($monthlydata);
-//    }
+    public function getNumberOfCheckedTransactionsForSoloTripLabelAttribute()
+    {
+        $checked_transactions=soloBookingPayments::query()->where('tour_operators_id',$this->id)->where('status','=',1)->count();
+        return $checked_transactions;
+    }
+    public function getNumberOfUncheckedTransactionsForSoloTripLabelAttribute()
+    {
+        $unchecked_transactions=soloBookingPayments::query()->where('tour_operators_id',$this->id)->where('status','=',0)->count();
+        return $unchecked_transactions;
+    }
 }
 

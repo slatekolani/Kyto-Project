@@ -23,7 +23,6 @@
             <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
             <meta name="csrf-token" content="{{ csrf_token() }}">
             {{ Html::style(url("img/np_fav.png"), ['rel' => 'stylesheet icon', 'type' => 'image/x-icon']) }}
-
             @stack('before-styles')
 
             {{ Html::style(url("/css/fonts.googleapis.css"), ['rel' => 'stylesheet', 'type' => 'text/css']) }}

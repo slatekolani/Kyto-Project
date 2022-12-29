@@ -88,6 +88,18 @@ class touristBooking extends BaseModel
         return $interval->format('%d');
     }
 
+    public function getCountDownDaysForTripLabelAttribute()
+    {
+        $tourist_booking=touristBooking::find($this->id);
+        $today_date=Carbon::now();
+        $start_date=$tourist_booking->start_date;
+        $datetime1=new \DateTime($today_date);
+        $datetime2=new \DateTime($start_date);
+        $interval=$datetime2->diff($datetime1);
+        return $interval->format("%R%a");
+
+    }
+
     public function getAmountToBePaidLocalLabelAttribute()
     {
         $tour_operator_blogs=tourOperatorsBlogs::find($this->tourOperatorsBlogs->id);

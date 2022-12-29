@@ -42,7 +42,16 @@ class touristBookingsController extends Controller
         $tour_operator=tourOperators::query()->where('uuid',$tour_operator_id)->first();
         return view('touristBookings.RecentTripsToBeConducted.index')->with('tour_operator',$tour_operator);
     }
-
+    public function verifiedTripsIndex($tour_operator_id)
+    {
+        $tour_operator = tourOperators::query()->where('uuid', $tour_operator_id)->first();
+        return view('touristBookings.verifiedTrips.index')->with('tour_operator', $tour_operator);
+    }
+    public function unverifiedTripsIndex($tour_operator_id)
+    {
+        $tour_operator=tourOperators::query()->where('uuid',$tour_operator_id)->first();
+        return view('touristBookings.UnverifiedTrips.index')->with('tour_operator',$tour_operator);
+    }
     /**
      * Show the form for creating a new resource.
      *
@@ -219,234 +228,18 @@ class touristBookingsController extends Controller
             ->addColumn('tourist_name',function ($tourist_bookings){
                 return $tourist_bookings->tourist_name;
             })
-            ->addColumn('phone_number',function($tourist_bookings){
-                return $tourist_bookings->phone_number;
+            ->addColumn('countdown_days',function ($tourist_bookings){
+                return $tourist_bookings->count_down_days_for_trip_label;
             })
-            ->addColumn('email_address',function ($tourist_bookings){
-                return $tourist_bookings->email_address_label;
-            })
-            ->addColumn('tourist_nation',function($tourist_bookings){
-                return MemberNationality::find($tourist_bookings->tourist_nation)->nation_name;
-            })
-            ->addColumn('blog_topic',function ($tourist_bookings){
-                return touristAttraction::find($tourist_bookings->tourOperatorsBlogs->blog_topic)->attraction_name;
-            })
-            ->addColumn('number_of_tourists',function ($tourist_bookings){
-                return $tourist_bookings->number_of_tourists;
-            })
-            ->addColumn('start_date',function ($tourist_bookings){
-                return date('jS M Y, H:m:s',strtotime($tourist_bookings->start_date));
-            })
-            ->addColumn('end_date',function ($tourist_bookings){
-                return date('jS M Y, H:m:s',strtotime($tourist_bookings->end_date));
-            })
-            ->addColumn('booked_time',function($tourist_bookings){
-                return $tourist_bookings->booked_time_label;
-            })
-            ->addColumn('number_of_days',function ($tourist_bookings){
-                return $tourist_bookings->number_of_days_label;
-            })
-            ->addColumn('reserve_percent',function($tourist_bookings){
-                return $tourist_bookings->tourOperatorsBlogs->guarantee_percentage;
-            })
-
-            ->addColumn('tourist_request',function ($tourist_bookings){
-                return $tourist_bookings->tourist_request;
-            })
-            ->addColumn('confirm_trip',function($tourist_booking){
-                $btn='<label class="switch{{$tourist_booking->status}}">
-                          <input type="checkbox">
-                          <span class="slider round"></span>
-                        </label>';
-                return $btn;
-            })
-            ->addColumn('confirmation',function($tourist_booking){
-                if ($tourist_booking->status==1)
+            ->addColumn('countdown_days_status',function ($tourist_bookings){
+                if ($tourist_bookings->count_down_days_for_trip_label<1)
                 {
-                    return '<span class="badge badge-pill badge-success">Confirmed</span>';
+                    return '<span class="badge badge-success">On range</span>';
                 }
                 else
                 {
-                    return '<span class="badge badge-pill badge-warning">Unconfirmed</span>';
+                    return '<span class="badge badge-danger">Out of range</span>';
                 }
-            })
-            ->addColumn('total_number_of_payments',function ($tourist_booking){
-                return $tourist_booking->total_number_of_payments_label;
-            })
-            ->addColumn('checked_payments',function ($tourist_booking){
-                    return $tourist_booking->checked_number_of_payments_label;
-            })
-            ->addColumn('unchecked_payments',function($tourist_booking){
-                if ($tourist_booking->unchecked_number_of_payments_label>0)
-                {
-                    return '<span class="badge badge-info">unchecked</span>';
-                }
-                elseif($tourist_booking->checked_number_of_payments_label==0)
-                {
-                    return '<span class="badge badge-warning">null</span>';
-                }
-                elseif($tourist_booking->total_number_of_payments_label==$tourist_booking->checked_number_of_payments_label)
-                {
-                    return '<span class="badge badge-success">Complete</span>';
-                }
-                else
-                {
-                    return '<span class="badge badge-danger">Error</span>';
-                }
-            })
-            ->addColumn('action',function ($tourist_bookings){
-                $btn='<a href="'.route('payments.index',$tourist_bookings->uuid).'"><button class="btn btn-primary btn-sm">Payments</button></a>';
-                $btn=$btn.'<a href="'.route('touristBookings.delete',$tourist_bookings->uuid).'"><button class="btn btn-danger btn-sm">Delete</button></a>';
-                return $btn;
-            })
-            ->rawColumns(['action','confirmation','email_address','checked_payments','total_number_of_payments','unchecked_payments','number_of_days','booked_time'])
-            ->make(true);
-    }
-
-    public function getAllTripForSearch()
-    {
-        $search=DB::table('tourist_bookings')
-            ->select(
-                [
-                    'tourist_bookings.id as id',
-                    'tourist_bookings.tour_operators_blogs_id as tour_operators_blogs_id',
-                    'tourist_bookings.tourist_name as tourist_name',
-                    'tourist_bookings.status as status',
-                    'tourist_bookings.phone_number as phone_number',
-                    'tourist_bookings.email_address as email_address',
-                    'tourist_bookings.tourist_nation as tourist_nation',
-                    'tourist_bookings.number_of_tourists as number_of_tourists',
-                    'tourist_bookings.start_date as start_date',
-                    'tourist_bookings.end_date as end_date',
-                    'tourist_bookings.tourist_request as tourist_request',
-                    'tourist_bookings.uuid as uuid',
-                    'operator.company_name as company_name',
-                    'operator.logo as logo',
-                    'attraction.attraction_name as attraction_name',
-                    'blog.blog_topic as blog_topic',
-                    'blog.payment_range as payment_range',
-                    'member_nation.nation_name as nation_name'
-                    ]
-            )
-            ->leftJoin('member_nationality as member_nation','member_nation.id','=','tourist_bookings.tourist_nation')
-            ->leftJoin('tour_operators_blogs as blog','blog.id','=','tourist_bookings.tour_operators_blogs_id')
-            ->leftJoin('tour_operators as operator','operator.id','=','tourist_bookings.tour_operators_id')
-            ->leftJoin('tourist_attractions as attraction','attraction.id','=','blog.blog_topic');
-        return $search;
-    }
-    public function search_Trip_booked()
-    {
-        $search_trip=request()->all();
-        $tourist_bookings=$this->getAllTripForSearch()->where('tourist_name','LIKE','%'.$search_trip['search'].'%')
-            ->orWhere('start_date','LIKE','%'.$search_trip['search'].'%')
-            ->orWhere('end_date','LIKE','%'.$search_trip['search'].'%')
-            ->orWhere('attraction.attraction_name','LIKE','%'.$search_trip['search'].'%')
-            ->orWhere('operator.company_name','LIKE','%'.$search_trip['search'].'%')
-            ->orWhere('member_nation.nation_name','LIKE','%'.$search_trip['search'].'%')
-            ->get();
-        return view('touristBookings.searched_trip_booked_results',compact('tourist_bookings'));
-    }
-    public function get_recent_bookings($tour_operator_id)
-    {
-        $tour_operator=tourOperators::find($tour_operator_id);
-        $tourist_bookings=touristBooking::query()->orderBy('tourist_name')->where('tour_operators_id',$tour_operator->id)->whereBetween('created_at',[Carbon::now()->startOfWeek(),Carbon::now()->endOfWeek()])->get();
-        return DataTables::of($tourist_bookings)
-            ->addIndexColumn()
-            ->addColumn('tourist_name',function ($tourist_bookings){
-                return $tourist_bookings->tourist_name;
-            })
-            ->addColumn('phone_number',function($tourist_bookings){
-                return $tourist_bookings->phone_number;
-            })
-            ->addColumn('email_address',function ($tourist_bookings){
-                return $tourist_bookings->email_address_label;
-            })
-            ->addColumn('tourist_nation',function($tourist_bookings){
-                return MemberNationality::find($tourist_bookings->tourist_nation)->nation_name;
-            })
-            ->addColumn('blog_topic',function ($tourist_bookings){
-                return touristAttraction::find($tourist_bookings->tourOperatorsBlogs->blog_topic)->attraction_name;
-            })
-            ->addColumn('number_of_tourists',function ($tourist_bookings){
-                return $tourist_bookings->number_of_tourists;
-            })
-            ->addColumn('start_date',function ($tourist_bookings){
-                return date('jS M Y, H:m:s',strtotime($tourist_bookings->start_date));
-            })
-            ->addColumn('end_date',function ($tourist_bookings){
-                return date('jS M Y, H:m:s',strtotime($tourist_bookings->end_date));
-            })
-            ->addColumn('booked_time',function($tourist_bookings){
-                return $tourist_bookings->booked_time_label;
-            })
-            ->addColumn('number_of_days',function ($tourist_bookings){
-                return $tourist_bookings->number_of_days_label;
-            })
-            ->addColumn('reserve_percent',function($tourist_bookings){
-                return $tourist_bookings->tourOperatorsBlogs->guarantee_percentage;
-            })
-
-            ->addColumn('tourist_request',function ($tourist_bookings){
-                return $tourist_bookings->tourist_request;
-            })
-            ->addColumn('confirm_trip',function($tourist_booking){
-                $btn='<label class="switch{{$tourist_booking->status}}">
-                          <input type="checkbox">
-                          <span class="slider round"></span>
-                        </label>';
-                return $btn;
-            })
-            ->addColumn('confirmation',function($tourist_booking){
-                if ($tourist_booking->status==1)
-                {
-                    return '<span class="badge badge-pill badge-success">Confirmed</span>';
-                }
-                else
-                {
-                    return '<span class="badge badge-pill badge-warning">Unconfirmed</span>';
-                }
-            })
-            ->addColumn('total_number_of_payments',function ($tourist_booking){
-                return $tourist_booking->total_number_of_payments_label;
-            })
-            ->addColumn('checked_payments',function ($tourist_booking){
-                    return $tourist_booking->checked_number_of_payments_label;
-            })
-            ->addColumn('unchecked_payments',function($tourist_booking){
-                if ($tourist_booking->unchecked_number_of_payments_label>0)
-                {
-                    return '<span class="badge badge-info">unchecked</span>';
-                }
-                elseif($tourist_booking->checked_number_of_payments_label==0)
-                {
-                    return '<span class="badge badge-warning">null</span>';
-                }
-                elseif($tourist_booking->total_number_of_payments_label==$tourist_booking->checked_number_of_payments_label)
-                {
-                    return '<span class="badge badge-success">Complete</span>';
-                }
-                else
-                {
-                    return '<span class="badge badge-danger">Error</span>';
-                }
-            })
-            ->addColumn('action',function ($tourist_bookings){
-                $btn='<a href="'.route('payments.index',$tourist_bookings->uuid).'"><button class="btn btn-primary btn-sm">Payments</button></a>';
-                $btn=$btn.'<a href="'.route('touristBookings.delete',$tourist_bookings->uuid).'"><button class="btn btn-danger btn-sm">Delete</button></a>';
-                return $btn;
-            })
-            ->rawColumns(['action','confirmation','email_address','checked_payments','total_number_of_payments','unchecked_payments','number_of_days','booked_time'])
-            ->make(true);
-    }
-
-    public function get_recent_trips_to_be_conducted($tour_operator_id)
-    {
-        $tour_operator=tourOperators::find($tour_operator_id);
-        $tourist_bookings=touristBooking::query()->orderBy('tourist_name')->where('tour_operators_id',$tour_operator->id)->whereBetween('start_date',[Carbon::now()->startOfMonth(),Carbon::now()->endOfMonth()])->get();
-        return DataTables::of($tourist_bookings)
-            ->addIndexColumn()
-            ->addColumn('tourist_name',function ($tourist_bookings){
-                return $tourist_bookings->tourist_name;
             })
             ->addColumn('phone_number',function($tourist_bookings){
                 return $tourist_bookings->phone_number;
@@ -506,6 +299,10 @@ class touristBookingsController extends Controller
                 return $tourist_booking->checked_number_of_payments_label;
             })
             ->addColumn('unchecked_payments',function($tourist_booking){
+                return $tourist_booking->unchecked_number_of_payments_label;
+            })
+
+            ->addColumn('payment_status',function($tourist_booking){
                 if ($tourist_booking->unchecked_number_of_payments_label>0)
                 {
                     return '<span class="badge badge-info">unchecked</span>';
@@ -528,8 +325,490 @@ class touristBookingsController extends Controller
                 $btn=$btn.'<a href="'.route('touristBookings.delete',$tourist_bookings->uuid).'"><button class="btn btn-danger btn-sm">Delete</button></a>';
                 return $btn;
             })
-            ->rawColumns(['action','confirmation','email_address','checked_payments','total_number_of_payments','unchecked_payments','number_of_days','booked_time'])
+            ->rawColumns(['action','confirmation','payment_status','countdown_days','countdown_days_status','email_address','checked_payments','total_number_of_payments','unchecked_payments','number_of_days','booked_time'])
             ->make(true);
     }
 
+    public function getAllTripForSearch()
+    {
+        $search=DB::table('tourist_bookings')
+            ->select(
+                [
+                    'tourist_bookings.id as id',
+                    'tourist_bookings.tour_operators_blogs_id as tour_operators_blogs_id',
+                    'tourist_bookings.tourist_name as tourist_name',
+                    'tourist_bookings.status as status',
+                    'tourist_bookings.phone_number as phone_number',
+                    'tourist_bookings.email_address as email_address',
+                    'tourist_bookings.tourist_nation as tourist_nation',
+                    'tourist_bookings.number_of_tourists as number_of_tourists',
+                    'tourist_bookings.start_date as start_date',
+                    'tourist_bookings.end_date as end_date',
+                    'tourist_bookings.tourist_request as tourist_request',
+                    'tourist_bookings.uuid as uuid',
+                    'operator.company_name as company_name',
+                    'operator.logo as logo',
+                    'attraction.attraction_name as attraction_name',
+                    'blog.blog_topic as blog_topic',
+                    'blog.payment_range as payment_range',
+                    'member_nation.nation_name as nation_name'
+                    ]
+            )
+            ->leftJoin('member_nationality as member_nation','member_nation.id','=','tourist_bookings.tourist_nation')
+            ->leftJoin('tour_operators_blogs as blog','blog.id','=','tourist_bookings.tour_operators_blogs_id')
+            ->leftJoin('tour_operators as operator','operator.id','=','tourist_bookings.tour_operators_id')
+            ->leftJoin('tourist_attractions as attraction','attraction.id','=','blog.blog_topic');
+        return $search;
+    }
+    public function search_Trip_booked()
+    {
+        $search_trip=request()->all();
+        $tourist_bookings=$this->getAllTripForSearch()->where('tourist_name','LIKE','%'.$search_trip['search'].'%')
+            ->orWhere('start_date','LIKE','%'.$search_trip['search'].'%')
+            ->orWhere('end_date','LIKE','%'.$search_trip['search'].'%')
+            ->orWhere('attraction.attraction_name','LIKE','%'.$search_trip['search'].'%')
+            ->orWhere('operator.company_name','LIKE','%'.$search_trip['search'].'%')
+            ->orWhere('member_nation.nation_name','LIKE','%'.$search_trip['search'].'%')
+            ->get();
+        return view('touristBookings.searched_trip_booked_results',compact('tourist_bookings'));
+    }
+    public function get_recent_bookings($tour_operator_id)
+    {
+        $tour_operator=tourOperators::find($tour_operator_id);
+        $tourist_bookings=touristBooking::query()->orderBy('tourist_name')->where('tour_operators_id',$tour_operator->id)->whereBetween('created_at',[Carbon::now()->startOfWeek(),Carbon::now()->endOfWeek()])->get();
+        return DataTables::of($tourist_bookings)
+            ->addIndexColumn()
+            ->addColumn('tourist_name',function ($tourist_bookings){
+                return $tourist_bookings->tourist_name;
+            })
+            ->addColumn('countdown_days',function ($tourist_bookings){
+                return $tourist_bookings->count_down_days_for_trip_label;
+            })
+            ->addColumn('countdown_days_status',function ($tourist_bookings){
+                if ($tourist_bookings->count_down_days_for_trip_label<1)
+                {
+                    return '<span class="badge badge-success">On range</span>';
+                }
+                else
+                {
+                    return '<span class="badge badge-danger">Out of range</span>';
+                }
+            })
+            ->addColumn('phone_number',function($tourist_bookings){
+                return $tourist_bookings->phone_number;
+            })
+            ->addColumn('email_address',function ($tourist_bookings){
+                return $tourist_bookings->email_address_label;
+            })
+            ->addColumn('tourist_nation',function($tourist_bookings){
+                return MemberNationality::find($tourist_bookings->tourist_nation)->nation_name;
+            })
+            ->addColumn('blog_topic',function ($tourist_bookings){
+                return touristAttraction::find($tourist_bookings->tourOperatorsBlogs->blog_topic)->attraction_name;
+            })
+            ->addColumn('number_of_tourists',function ($tourist_bookings){
+                return $tourist_bookings->number_of_tourists;
+            })
+            ->addColumn('start_date',function ($tourist_bookings){
+                return date('jS M Y, H:m:s',strtotime($tourist_bookings->start_date));
+            })
+            ->addColumn('end_date',function ($tourist_bookings){
+                return date('jS M Y, H:m:s',strtotime($tourist_bookings->end_date));
+            })
+            ->addColumn('booked_time',function($tourist_bookings){
+                return $tourist_bookings->booked_time_label;
+            })
+            ->addColumn('number_of_days',function ($tourist_bookings){
+                return $tourist_bookings->number_of_days_label;
+            })
+            ->addColumn('reserve_percent',function($tourist_bookings){
+                return $tourist_bookings->tourOperatorsBlogs->guarantee_percentage;
+            })
+
+            ->addColumn('tourist_request',function ($tourist_bookings){
+                return $tourist_bookings->tourist_request;
+            })
+            ->addColumn('confirm_trip',function($tourist_booking){
+                $btn='<label class="switch{{$tourist_booking->status}}">
+                          <input type="checkbox">
+                          <span class="slider round"></span>
+                        </label>';
+                return $btn;
+            })
+            ->addColumn('confirmation',function($tourist_booking){
+                if ($tourist_booking->status==1)
+                {
+                    return '<span class="badge badge-pill badge-success">Confirmed</span>';
+                }
+                else
+                {
+                    return '<span class="badge badge-pill badge-warning">Unconfirmed</span>';
+                }
+            })
+            ->addColumn('total_number_of_payments',function ($tourist_booking){
+                return $tourist_booking->total_number_of_payments_label;
+            })
+            ->addColumn('checked_payments',function ($tourist_booking){
+                return $tourist_booking->checked_number_of_payments_label;
+            })
+            ->addColumn('unchecked_payments',function($tourist_booking){
+                return $tourist_booking->unchecked_number_of_payments_label;
+            })
+
+            ->addColumn('payment_status',function($tourist_booking){
+                if ($tourist_booking->unchecked_number_of_payments_label>0)
+                {
+                    return '<span class="badge badge-info">unchecked</span>';
+                }
+                elseif($tourist_booking->checked_number_of_payments_label==0)
+                {
+                    return '<span class="badge badge-warning">null</span>';
+                }
+                elseif($tourist_booking->total_number_of_payments_label==$tourist_booking->checked_number_of_payments_label)
+                {
+                    return '<span class="badge badge-success">Complete</span>';
+                }
+                else
+                {
+                    return '<span class="badge badge-danger">Error</span>';
+                }
+            })
+            ->addColumn('action',function ($tourist_bookings){
+                $btn='<a href="'.route('payments.index',$tourist_bookings->uuid).'"><button class="btn btn-primary btn-sm">Payments</button></a>';
+                $btn=$btn.'<a href="'.route('touristBookings.delete',$tourist_bookings->uuid).'"><button class="btn btn-danger btn-sm">Delete</button></a>';
+                return $btn;
+            })
+            ->rawColumns(['action','confirmation','payment_status','countdown_days','countdown_days_status','email_address','checked_payments','total_number_of_payments','unchecked_payments','number_of_days','booked_time'])
+            ->make(true);
+    }
+
+    public function get_recent_trips_to_be_conducted($tour_operator_id)
+    {
+        $tour_operator=tourOperators::find($tour_operator_id);
+        $tourist_bookings=touristBooking::query()->orderBy('tourist_name')->where('tour_operators_id',$tour_operator->id)->whereBetween('start_date',[Carbon::now()->startOfMonth(),Carbon::now()->endOfMonth()])->get();
+        return DataTables::of($tourist_bookings)
+            ->addIndexColumn()
+            ->addColumn('tourist_name',function ($tourist_bookings){
+                return $tourist_bookings->tourist_name;
+            })
+            ->addColumn('countdown_days',function ($tourist_bookings){
+                return $tourist_bookings->count_down_days_for_trip_label;
+            })
+            ->addColumn('countdown_days_status',function ($tourist_bookings){
+                if ($tourist_bookings->count_down_days_for_trip_label<1)
+                {
+                    return '<span class="badge badge-success">On range</span>';
+                }
+                else
+                {
+                    return '<span class="badge badge-danger">Out of range</span>';
+                }
+            })
+            ->addColumn('phone_number',function($tourist_bookings){
+                return $tourist_bookings->phone_number;
+            })
+            ->addColumn('email_address',function ($tourist_bookings){
+                return $tourist_bookings->email_address_label;
+            })
+            ->addColumn('tourist_nation',function($tourist_bookings){
+                return MemberNationality::find($tourist_bookings->tourist_nation)->nation_name;
+            })
+            ->addColumn('blog_topic',function ($tourist_bookings){
+                return touristAttraction::find($tourist_bookings->tourOperatorsBlogs->blog_topic)->attraction_name;
+            })
+            ->addColumn('number_of_tourists',function ($tourist_bookings){
+                return $tourist_bookings->number_of_tourists;
+            })
+            ->addColumn('start_date',function ($tourist_bookings){
+                return date('jS M Y, H:m:s',strtotime($tourist_bookings->start_date));
+            })
+            ->addColumn('end_date',function ($tourist_bookings){
+                return date('jS M Y, H:m:s',strtotime($tourist_bookings->end_date));
+            })
+            ->addColumn('booked_time',function($tourist_bookings){
+                return $tourist_bookings->booked_time_label;
+            })
+            ->addColumn('number_of_days',function ($tourist_bookings){
+                return $tourist_bookings->number_of_days_label;
+            })
+            ->addColumn('reserve_percent',function($tourist_bookings){
+                return $tourist_bookings->tourOperatorsBlogs->guarantee_percentage;
+            })
+
+            ->addColumn('tourist_request',function ($tourist_bookings){
+                return $tourist_bookings->tourist_request;
+            })
+            ->addColumn('confirm_trip',function($tourist_booking){
+                $btn='<label class="switch{{$tourist_booking->status}}">
+                          <input type="checkbox">
+                          <span class="slider round"></span>
+                        </label>';
+                return $btn;
+            })
+            ->addColumn('confirmation',function($tourist_booking){
+                if ($tourist_booking->status==1)
+                {
+                    return '<span class="badge badge-pill badge-success">Confirmed</span>';
+                }
+                else
+                {
+                    return '<span class="badge badge-pill badge-warning">Unconfirmed</span>';
+                }
+            })
+            ->addColumn('total_number_of_payments',function ($tourist_booking){
+                return $tourist_booking->total_number_of_payments_label;
+            })
+            ->addColumn('checked_payments',function ($tourist_booking){
+                return $tourist_booking->checked_number_of_payments_label;
+            })
+            ->addColumn('unchecked_payments',function($tourist_booking){
+                return $tourist_booking->unchecked_number_of_payments_label;
+            })
+
+            ->addColumn('payment_status',function($tourist_booking){
+                if ($tourist_booking->unchecked_number_of_payments_label>0)
+                {
+                    return '<span class="badge badge-info">unchecked</span>';
+                }
+                elseif($tourist_booking->checked_number_of_payments_label==0)
+                {
+                    return '<span class="badge badge-warning">null</span>';
+                }
+                elseif($tourist_booking->total_number_of_payments_label==$tourist_booking->checked_number_of_payments_label)
+                {
+                    return '<span class="badge badge-success">Complete</span>';
+                }
+                else
+                {
+                    return '<span class="badge badge-danger">Error</span>';
+                }
+            })
+            ->addColumn('action',function ($tourist_bookings){
+                $btn='<a href="'.route('payments.index',$tourist_bookings->uuid).'"><button class="btn btn-primary btn-sm">Payments</button></a>';
+                $btn=$btn.'<a href="'.route('touristBookings.delete',$tourist_bookings->uuid).'"><button class="btn btn-danger btn-sm">Delete</button></a>';
+                return $btn;
+            })
+            ->rawColumns(['action','confirmation','payment_status','countdown_days','countdown_days_status','email_address','checked_payments','total_number_of_payments','unchecked_payments','number_of_days','booked_time'])
+            ->make(true);
+    }
+
+    public function getVerifiedTrips($tour_operator_id)
+    {
+        $tour_operator=tourOperators::find($tour_operator_id);
+        $tourist_bookings=touristBooking::query()->orderBy('tourist_name')->where('tour_operators_id',$tour_operator->id)->where('status','=',1)->get();
+        return DataTables::of($tourist_bookings)
+            ->addIndexColumn()
+            ->addColumn('tourist_name',function ($tourist_bookings){
+                return $tourist_bookings->tourist_name;
+            })
+            ->addColumn('countdown_days',function ($tourist_bookings){
+                return $tourist_bookings->count_down_days_for_trip_label;
+            })
+            ->addColumn('countdown_days_status',function ($tourist_bookings){
+                if ($tourist_bookings->count_down_days_for_trip_label<1)
+                {
+                    return '<span class="badge badge-success">On range</span>';
+                }
+                else
+                {
+                    return '<span class="badge badge-danger">Out of range</span>';
+                }
+            })
+            ->addColumn('phone_number',function($tourist_bookings){
+                return $tourist_bookings->phone_number;
+            })
+            ->addColumn('email_address',function ($tourist_bookings){
+                return $tourist_bookings->email_address_label;
+            })
+            ->addColumn('tourist_nation',function($tourist_bookings){
+                return MemberNationality::find($tourist_bookings->tourist_nation)->nation_name;
+            })
+            ->addColumn('blog_topic',function ($tourist_bookings){
+                return touristAttraction::find($tourist_bookings->tourOperatorsBlogs->blog_topic)->attraction_name;
+            })
+            ->addColumn('number_of_tourists',function ($tourist_bookings){
+                return $tourist_bookings->number_of_tourists;
+            })
+            ->addColumn('start_date',function ($tourist_bookings){
+                return date('jS M Y, H:m:s',strtotime($tourist_bookings->start_date));
+            })
+            ->addColumn('end_date',function ($tourist_bookings){
+                return date('jS M Y, H:m:s',strtotime($tourist_bookings->end_date));
+            })
+            ->addColumn('booked_time',function($tourist_bookings){
+                return $tourist_bookings->booked_time_label;
+            })
+            ->addColumn('number_of_days',function ($tourist_bookings){
+                return $tourist_bookings->number_of_days_label;
+            })
+            ->addColumn('reserve_percent',function($tourist_bookings){
+                return $tourist_bookings->tourOperatorsBlogs->guarantee_percentage;
+            })
+
+            ->addColumn('tourist_request',function ($tourist_bookings){
+                return $tourist_bookings->tourist_request;
+            })
+            ->addColumn('confirm_trip',function($tourist_booking){
+                $btn='<label class="switch{{$tourist_booking->status}}">
+                          <input type="checkbox">
+                          <span class="slider round"></span>
+                        </label>';
+                return $btn;
+            })
+            ->addColumn('confirmation',function($tourist_booking){
+                if ($tourist_booking->status==1)
+                {
+                    return '<span class="badge badge-pill badge-success">Confirmed</span>';
+                }
+                else
+                {
+                    return '<span class="badge badge-pill badge-warning">Unconfirmed</span>';
+                }
+            })
+            ->addColumn('total_number_of_payments',function ($tourist_booking){
+                return $tourist_booking->total_number_of_payments_label;
+            })
+            ->addColumn('checked_payments',function ($tourist_booking){
+                return $tourist_booking->checked_number_of_payments_label;
+            })
+            ->addColumn('unchecked_payments',function($tourist_booking){
+                return $tourist_booking->unchecked_number_of_payments_label;
+            })
+
+            ->addColumn('payment_status',function($tourist_booking){
+                if ($tourist_booking->unchecked_number_of_payments_label>0)
+                {
+                    return '<span class="badge badge-info">unchecked</span>';
+                }
+                elseif($tourist_booking->checked_number_of_payments_label==0)
+                {
+                    return '<span class="badge badge-warning">null</span>';
+                }
+                elseif($tourist_booking->total_number_of_payments_label==$tourist_booking->checked_number_of_payments_label)
+                {
+                    return '<span class="badge badge-success">Complete</span>';
+                }
+                else
+                {
+                    return '<span class="badge badge-danger">Error</span>';
+                }
+            })
+            ->addColumn('action',function ($tourist_bookings){
+                $btn='<a href="'.route('payments.index',$tourist_bookings->uuid).'"><button class="btn btn-primary btn-sm">Payments</button></a>';
+                $btn=$btn.'<a href="'.route('touristBookings.delete',$tourist_bookings->uuid).'"><button class="btn btn-danger btn-sm">Delete</button></a>';
+                return $btn;
+            })
+            ->rawColumns(['action','confirmation','payment_status','countdown_days','countdown_days_status','email_address','checked_payments','total_number_of_payments','unchecked_payments','number_of_days','booked_time'])
+            ->make(true);
+    }
+
+    public function getUnverifiedTrips($tour_operator_id)
+    {
+        $tour_operator=tourOperators::find($tour_operator_id);
+        $tourist_bookings=touristBooking::query()->orderBy('tourist_name')->where('tour_operators_id',$tour_operator->id)->where('status','=',0)->get();
+        return DataTables::of($tourist_bookings)
+            ->addIndexColumn()
+            ->addColumn('tourist_name',function ($tourist_bookings){
+                return $tourist_bookings->tourist_name;
+            })
+            ->addColumn('countdown_days',function ($tourist_bookings){
+                return $tourist_bookings->count_down_days_for_trip_label;
+            })
+            ->addColumn('countdown_days_status',function ($tourist_bookings){
+                if ($tourist_bookings->count_down_days_for_trip_label<1)
+                {
+                    return '<span class="badge badge-success">On range</span>';
+                }
+                else
+                {
+                    return '<span class="badge badge-danger">Out of range</span>';
+                }
+            })
+            ->addColumn('phone_number',function($tourist_bookings){
+                return $tourist_bookings->phone_number;
+            })
+            ->addColumn('email_address',function ($tourist_bookings){
+                return $tourist_bookings->email_address_label;
+            })
+            ->addColumn('tourist_nation',function($tourist_bookings){
+                return MemberNationality::find($tourist_bookings->tourist_nation)->nation_name;
+            })
+            ->addColumn('blog_topic',function ($tourist_bookings){
+                return touristAttraction::find($tourist_bookings->tourOperatorsBlogs->blog_topic)->attraction_name;
+            })
+            ->addColumn('number_of_tourists',function ($tourist_bookings){
+                return $tourist_bookings->number_of_tourists;
+            })
+            ->addColumn('start_date',function ($tourist_bookings){
+                return date('jS M Y, H:m:s',strtotime($tourist_bookings->start_date));
+            })
+            ->addColumn('end_date',function ($tourist_bookings){
+                return date('jS M Y, H:m:s',strtotime($tourist_bookings->end_date));
+            })
+            ->addColumn('booked_time',function($tourist_bookings){
+                return $tourist_bookings->booked_time_label;
+            })
+            ->addColumn('number_of_days',function ($tourist_bookings){
+                return $tourist_bookings->number_of_days_label;
+            })
+            ->addColumn('reserve_percent',function($tourist_bookings){
+                return $tourist_bookings->tourOperatorsBlogs->guarantee_percentage;
+            })
+
+            ->addColumn('tourist_request',function ($tourist_bookings){
+                return $tourist_bookings->tourist_request;
+            })
+            ->addColumn('confirm_trip',function($tourist_booking){
+                $btn='<label class="switch{{$tourist_booking->status}}">
+                          <input type="checkbox">
+                          <span class="slider round"></span>
+                        </label>';
+                return $btn;
+            })
+            ->addColumn('confirmation',function($tourist_booking){
+                if ($tourist_booking->status==1)
+                {
+                    return '<span class="badge badge-pill badge-success">Confirmed</span>';
+                }
+                else
+                {
+                    return '<span class="badge badge-pill badge-warning">Unconfirmed</span>';
+                }
+            })
+            ->addColumn('total_number_of_payments',function ($tourist_booking){
+                return $tourist_booking->total_number_of_payments_label;
+            })
+            ->addColumn('checked_payments',function ($tourist_booking){
+                return $tourist_booking->checked_number_of_payments_label;
+            })
+            ->addColumn('unchecked_payments',function($tourist_booking){
+                return $tourist_booking->unchecked_number_of_payments_label;
+            })
+
+            ->addColumn('payment_status',function($tourist_booking){
+                if ($tourist_booking->unchecked_number_of_payments_label>0)
+                {
+                    return '<span class="badge badge-info">unchecked</span>';
+                }
+                elseif($tourist_booking->checked_number_of_payments_label==0)
+                {
+                    return '<span class="badge badge-warning">null</span>';
+                }
+                elseif($tourist_booking->total_number_of_payments_label==$tourist_booking->checked_number_of_payments_label)
+                {
+                    return '<span class="badge badge-success">Complete</span>';
+                }
+                else
+                {
+                    return '<span class="badge badge-danger">Error</span>';
+                }
+            })
+            ->addColumn('action',function ($tourist_bookings){
+                $btn='<a href="'.route('payments.index',$tourist_bookings->uuid).'"><button class="btn btn-primary btn-sm">Payments</button></a>';
+                $btn=$btn.'<a href="'.route('touristBookings.delete',$tourist_bookings->uuid).'"><button class="btn btn-danger btn-sm">Delete</button></a>';
+                return $btn;
+            })
+            ->rawColumns(['action','confirmation','payment_status','countdown_days','countdown_days_status','email_address','checked_payments','total_number_of_payments','unchecked_payments','number_of_days','booked_time'])
+            ->make(true);
+    }
 }

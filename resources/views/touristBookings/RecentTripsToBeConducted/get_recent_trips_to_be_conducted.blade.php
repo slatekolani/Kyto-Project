@@ -3,6 +3,8 @@
     <tr>
         <th>@lang('Date of booking')</th>
         <th>@lang('Tourist name')</th>
+        <th>@lang('Countdown days')</th>
+        <th>@lang('Countdown days status')</th>
         <th>@lang('Phone number')</th>
         <th>@lang('Email address')</th>
         <th>@lang('Tourist nation')</th>
@@ -47,6 +49,8 @@
                 columns: [
                     {data:'booked_time',name:'booked_time',orderable: true,searchable: true},
                     { data: 'tourist_name', name: 'tourist_name', orderable: true, searchable: true},
+                    { data: 'countdown_days', name: 'countdown_days', orderable: true, searchable: true},
+                    { data: 'countdown_days_status', name: 'countdown_days_status', orderable: true, searchable: true},
                     { data: 'phone_number', name: 'phone_number', orderable: false, searchable: true},
                     {data:'email_address',name:'email_address',orderable: false,searchable: true},
                     {data:'tourist_nation',name:'tourist_nation',orderable: true,searchable: true},

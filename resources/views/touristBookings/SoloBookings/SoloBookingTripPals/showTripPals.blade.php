@@ -13,7 +13,11 @@
                     <div class="list-group">
                         <ul class="list-unstyled">
                             <a href="#" class="list-group-item list-group-item-action">
-                                <h5 class="list-group-item-heading" style="font-family: sans-serif, Verdanau"><i class="fas fa-clipboard"></i> {{ __('Amount to be Paid') }}</h5>
+                                @if($solo_bookings->tourist_nation==1)
+                                <h5 class="list-group-item-heading" style="font-family: sans-serif, Verdanau"><i class="fas fa-clipboard"></i> Amount to be Paid ~ {{number_format($solo_bookings->amount_to_be_paid_label)}} shillings</h5>
+                                @else
+                                    <h5 class="list-group-item-heading" style="font-family: sans-serif, Verdanau"><i class="fas fa-clipboard"></i> Amount to be Paid ~ $ {{number_format($solo_bookings->amount_to_be_paid_label)}} </h5>
+                                @endif
                             </a>
                         </ul>
                     </div>
@@ -23,7 +27,12 @@
                     <div class="list-group">
                         <ul class="list-unstyled">
                             <a href="#" class="list-group-item list-group-item-action">
-                                <h5 class="list-group-item-heading" style="font-family: sans-serif, Verdana"><i class="fas fa-clipboard"></i> {{ __('Amount Paid') }}</h5>
+                                @if($solo_bookings->tourist_nation==1)
+                                <h5 class="list-group-item-heading" style="font-family: sans-serif, Verdana"><i class="fas fa-clipboard"></i> Amount Paid ~ {{number_format($solo_bookings->SoloTripAmountPaidByTripPalsLabel)}} shillings</h5>
+                                @else
+                                    <h5 class="list-group-item-heading" style="font-family: sans-serif, Verdana"><i class="fas fa-clipboard"></i> Amount Paid ~$ {{number_format($solo_bookings->SoloTripAmountPaidByTripPalsLabel)}}</h5>
+                                @endif
+
                             </a>
                         </ul>
                     </div>
@@ -33,7 +42,11 @@
                     <div class="list-group">
                         <ul class="list-unstyled">
                             <a href="#" class="list-group-item list-group-item-action">
-                                <h5 class="list-group-item-heading" style="font-family: sans-serif, Verdana"><i class="fas fa-clipboard"></i> {{ __('Amount Remaining') }}</h5>
+                                @if($solo_bookings->tourist_nation==1)
+                                <h5 class="list-group-item-heading" style="font-family: sans-serif, Verdana"><i class="fas fa-clipboard"></i> Amount Remaining ~ {{number_format($solo_bookings->amount_to_be_paid_label-$solo_bookings->SoloTripAmountPaidByTripPalsLabel)}} shillings</h5>
+                                @else
+                                    <h5 class="list-group-item-heading" style="font-family: sans-serif, Verdana"><i class="fas fa-clipboard"></i> Amount Remaining ~ $ {{number_format($solo_bookings->amount_to_be_paid_label-$solo_bookings->SoloTripAmountPaidByTripPalsLabel)}}</h5>
+                                @endif
                             </a>
                         </ul>
                     </div>

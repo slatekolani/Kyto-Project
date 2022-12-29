@@ -1,4 +1,4 @@
-@extends('layouts.main', ['title' => 'Bookings', 'header' => 'Bookings'])
+@extends('layouts.main', ['title' => 'Custom Bookings', 'header' => 'Custom Bookings'])
 
 @push('after-styles')
     {{ Html::style(url('vendor/select2/css/select2.min.css')) }}

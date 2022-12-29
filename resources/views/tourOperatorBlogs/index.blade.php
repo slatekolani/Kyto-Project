@@ -33,7 +33,7 @@
     </div>
     <div class="row" style="overflow-x: scroll">
         <div class="col-md-12">
-            <section class="card card-primary mb-4" style="width:1000%">
+            <section class="card card-primary mb-4" style="width:350%">
                 <a class='' href="{{ route('tourOperatorBlogs.create',$tour_operator->uuid) }}"><i
                         class="fas fa-pencil-alt"></i>&nbsp;{{ trans('Create blog') }}</a>&nbsp;&nbsp;
                 @include('tourOperatorBlogs.get_tour_operator_blogs')

@@ -268,30 +268,12 @@ class tourOperatorController extends Controller
                     return '<span class="badge badge-pill badge-success">Verified</span>';
                 }
             })
-            ->addColumn('blog_posted',function ($tour_operator){
-                return $tour_operator->blog_posted_label;
-            })
 
-            ->addColumn('blogs_verified',function($tour_operator){
-                return $tour_operator->blog_posted_verified_label;
-            })
-            ->addColumn('blogs_unverified',function ($tour_operator){
-                return $tour_operator->blog_posted_unverified_label;
-            })
-            ->addColumn('bookings_made',function ($tour_operator){
-                return $tour_operator->total_bookings_made_label;
-            })
-            ->addColumn('bookings_verified',function ($tour_operator){
-                return $tour_operator->total_bookings_verified_label;
-            })
-            ->addColumn('bookings_unverified',function ($tour_operator){
-                return $tour_operator->total_bookings_unverified_label;
-            })
             ->addColumn('action', function($tour_operator) {
                 return $tour_operator->button_actions;
             })
             ->rawColumns(['logo'])
-            ->rawColumns(['action','status','activate_company','company_status','blog_posted','blogs_verified','blogs_unverified','bookings_made','bookings_verified','bookings_unverified','date_of_joining'])
+            ->rawColumns(['action','status','activate_company','company_status','date_of_joining'])
             ->make(true);
 
     }

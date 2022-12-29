@@ -29,6 +29,7 @@
                                     <th>Payment Gateway</th>
                                     <th>Account name</th>
                                     <th>Account number</th>
+                                    <th>Change status</th>
                                     <th>Status</th>
                                     <th>Action</th>
                                 </tr>
@@ -41,6 +42,10 @@
                                             <td>{{\App\Models\paymentGateways\paymentGateways::find($solo_tourist_account_information->payment_gateway)->payment_gateway_name}}</td>
                                             <td>{{$solo_tourist_account_information->account_name}}</td>
                                             <td>{{$solo_tourist_account_information->account_number}}</td>
+                                            <td><label class="switch">
+                                                    <input type="checkbox">
+                                                    <span class="slider round"></span>
+                                                </label></td>
                                             <td>
                                                 @if($solo_tourist_account_information->status==0)
                                                     <span class="badge badge-danger">Inactive</span>

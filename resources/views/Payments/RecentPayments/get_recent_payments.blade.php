@@ -36,7 +36,7 @@
                     return JSON.parse(localStorage.getItem('DataTables_' + settings.sInstance));
                 },
 
-                ajax: '{{ route('payments.get_recent_payments',$tourist_booking->uuid) }}',
+                ajax: '{{ route('payments.get_recent_payments',$tour_operator->uuid) }}',
                 columns: [
                     { data: 'tourist_name', name: 'tourist_name', orderable: true, searchable: true},
                     { data: 'phone_number', name: 'phone_number', orderable: true, searchable: true},

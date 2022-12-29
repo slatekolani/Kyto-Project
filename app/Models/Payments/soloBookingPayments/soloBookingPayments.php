@@ -21,4 +21,5 @@ class soloBookingPayments extends BaseModel
     {
         return $this->belongsTo(soloBookings::class);
     }
+
 }

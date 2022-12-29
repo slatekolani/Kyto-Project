@@ -1,4 +1,4 @@
-@extends('layouts.main', ['title' => 'Bookings', 'header' => 'Bookings'])
+@extends('layouts.main', ['title' => 'Solo Bookings', 'header' => 'Solo Bookings'])
 
 @push('after-styles')
     {{ Html::style(url('vendor/select2/css/select2.min.css')) }}
@@ -34,7 +34,7 @@
                                             <div class="card-body">
                                                 <div style="position:relative">
                                                     <a href="{{route('soloBookingTripPals.show',$solo_booking->uuid)}}"><i class="fas fa-pen-square"></i> Trip Pals</a>
-                                                    <a href="{{route('soloBookingsPayments.show',$solo_booking->uuid)}}" style="float: right"><button class="btn btn-primary btn-sm">Payment history &rarr;</button></a>
+                                                    <a href="{{route('soloBookingPayments.show',$solo_booking->uuid)}}" style="float: right"><button class="btn btn-primary btn-sm">Payment history &rarr;</button></a>
                                                 </div>
                                             </div>
                                         </div>
@@ -44,9 +44,9 @@
                                 <div style="padding-top:5px;border-bottom: 1px solid gainsboro">
                                     <table class="table table-hover table-responsive-md">
                                         <tr>
-                                            <th>Trip Code</th>
+                                            <th>Trip code</th>
                                             <td>{{$solo_booking->trip_code}}</td>
-                                            <th>Travel Group</th>
+                                            <th>Travel group</th>
                                             <td>{{$solo_booking->group_travel_category}}</td>
                                         </tr>
                                         <tr>
@@ -56,7 +56,7 @@
                                             <td>{{\App\Models\MemberNations\MemberNationality::find($solo_booking->tourist_nation)->nation_name}}</td>
                                         </tr>
                                         <tr>
-                                            <th>Number of Travellers</th>
+                                            <th>Number of travellers</th>
                                             <td>{{$solo_booking->number_of_tourists}}</td>
                                             <th>Trip to</th>
                                             <td>{{\App\Models\touristAttraction\touristAttraction::find($solo_booking->tourOperatorsBlogs->blog_topic)->attraction_name}}</td>
@@ -70,24 +70,101 @@
                                         <tr>
                                             <th>Days</th>
                                             <td>{{Auth::user()->getNumberOfDaysForSoloTrip($solo_booking)}} days</td>
-                                            <th>Trip Approval</th>
+                                            <th>Trip approval</th>
+                                            @if($solo_booking->status==1)
+                                            <td><span class="badge badge-success">Approved</span></td>
+                                            @else
                                             <td><span class="badge badge-info">Unapproved</span></td>
+                                            @endif
                                         </tr>
                                         <tr>
-                                            <th>Amount to be Paid</th>
-                                            <td><span class="badge badge-light">Wait...</span></td>
-                                            <th>Due Payment</th>
+                                            <th>Trip cost</th>
+                                            @if($solo_booking->amount_to_be_paid_label!==null)
+                                                @if($solo_booking->tourist_nation==1)
+                                                     <td>{{number_format($solo_booking->amount_to_be_paid_label)}} shillings</td>
+                                                @else
+                                                    <td>$ {{number_format($solo_booking->amount_to_be_paid_label)}} </td>
+                                                @endif
+                                                @else
+                                               <td><span class="badge badge-danger">Unset</span></td>
+                                            @endif
+                                            <th>Due payment</th>
                                             <td>{{$solo_booking->tourOperatorsBlogs->payment_range}}</td>
                                         </tr>
-
+                                        <tr>
+                                            <th>Reserve percent</th>
+                                            <td>{{$solo_booking->getDisplayGuaranteePercent($solo_booking)}}%</td>
+                                            <th>Reserve amount</th>
+                                            @if($solo_booking->tourist_nation==1)
+                                            <td>{{number_format($solo_booking->getSoloTripReserveAmount($solo_booking))}} shillings</td>
+                                            @else
+                                                <td>$ {{number_format($solo_booking->getSoloTripReserveAmount($solo_booking))}}</td>
+                                            @endif
+                                        </tr>
+                                        <tr>
+                                            <th>Amount paid</th>
+                                            @if($solo_booking->tourist_nation==1)
+                                                <td>{{number_format($solo_booking->SoloTripAmountPaidLabel)}} shillings</td>
+                                            @else
+                                                <td> $ {{number_format($solo_booking->SoloTripAmountPaidLabel)}}</td>
+                                            @endif
+                                                <th>Number of transactions</th>
+                                                <td>{{$solo_booking->NumberOfTransactionsMadeForSoloTripLabel}}</td>
+                                        </tr>
+                                        <tr>
+                                            <th>Remaining amount</th>
+                                            @if($solo_booking->tourist_nation==1)
+                                            <td> {{number_format($solo_booking->amount_to_be_paid_label-$solo_booking->SoloTripAmountPaidLabel)}} shillings</td>
+                                            @else
+                                                <td> $ {{number_format($solo_booking->amount_to_be_paid_label-$solo_booking->SoloTripAmountPaidLabel)}} </td>
+                                            @endif
+                                                <th>Exceeded amount</th>
+                                            @if($solo_booking->tourist_nation==1)
+                                                <td> {{number_format($solo_booking->SoloTripAmountPaidLabel-$solo_booking->amount_to_be_paid_label)}} shillings</td>
+                                            @else
+                                                <td> $ {{number_format($solo_booking->SoloTripAmountPaidLabel-$solo_booking->amount_to_be_paid_label)}} </td>
+                                            @endif
+                                        </tr>
+                                        <tr>
+                                            <th>Reserve status</th>
+                                            @if($solo_booking->SoloTripAmountPaidLabel>$solo_booking->getSoloTripReserveAmount($solo_booking))
+                                            <td><span class="badge badge-success">Complete</span></td>
+                                            @else
+                                                <td><span class="badge badge-info">Incomplete</span></td>
+                                            @endif
+                                            <th>Payment status</th>
+                                            @if($solo_booking->SoloTripAmountPaidLabel>=$solo_booking->amount_to_be_paid_label)
+                                            <td><span class="badge badge-success">Complete</span></td>
+                                            @else
+                                            <td><span class="badge badge-info">Incomplete</span></td>
+                                            @endif
+                                        </tr>
+                                        <tr>
+                                            <th>Make this trip public</th>
+                                            <td>
+                                                <label class="switch">
+                                                    <input type="checkbox" id="confirm_trip">
+                                                    <span class="slider round"></span>
+                                                </label>
+                                            </td>
+                                            <th>Trip status</th>
+                                            @if($solo_booking->solo_trip_public_status==1)
+                                                <td><span class="badge badge-primary">Public</span></td>
+                                            @else
+                                                <td><span class="badge badge-primary">Private</span></td>
+                                            @endif
+                                        </tr>
 
                                     </table>
-
                                 </div>
                                 <div class="col-md-12" style="padding-top: 10px">
                                     <div class="row">
                                         <div class="col-md-3">
-                                            <button class="btn btn-primary btn-sm rate_button" value="{{$solo_booking->tourOperators->id}}">Rate</button>
+                                            @if($solo_booking->status==0 && $solo_booking->SoloTripAmountPaidLabel<$solo_booking->getSoloTripReserveAmount($solo_booking))
+                                            <button class="btn btn-primary btn-sm" onclick="alert('You are not legible to rate the tour operator. Seems you have not conducted a safari with this tour operator. Please wait!')">Rate</button>
+                                            @else
+                                                <button class="btn btn-primary btn-sm rate_button" value="{{$solo_booking->tourOperators->id}}">Rate</button>
+                                            @endif
                                         </div>
                                         <div class="col-md-3">
                                             <a href="mailto:info@kytotz.com"><button class="btn btn-warning btn-sm">Report</button></a>
@@ -100,11 +177,24 @@
                                             @endif
                                         </div>
                                         <div class="col-md-3">
-                                            @if($solo_booking->status==0)
-                                            <a href="{{route('soloBookingsPayments.create',$solo_booking->uuid)}}"><button class="btn btn-info btn-sm">Pay bill</button></a>
+                                            @if($solo_booking->SoloTripAmountLabel!==null)
+                                            @if($solo_booking->status==1)
+                                                @if($solo_booking->SoloTripAmountPaidLabel>=$solo_booking->amount_to_be_paid_label)
+                                                    <button class="btn btn-info btn-sm" onclick="alert('Congrats! Payment complete. No more payment service for this trip')">Pay bill</button>
+                                                @elseif($solo_booking->SoloTripAmountVerifiedAndNonVerifiedPaidLabel>=$solo_booking->amount_to_be_paid_label)
+                                                    <button class="btn btn-info btn-sm" onclick="alert('Seems the transactions done are enough for this trip cost. Please wait for your transactions to be verified')">Pay bill</button></a>
+                                                @else
+                                                    <a href="{{route('soloBookingPayments.create',$solo_booking->uuid)}}"><button class="btn btn-info btn-sm">Pay bill</button></a>
+                                                @endif
                                             @else
                                                 <button class="btn btn-info btn-sm" onclick="alert('You are only allowed to pay the bill when you are verified to pay by the tour operator.Please wait!')">Pay bill</button>
                                             @endif
+                                            @else
+                                                <button class="btn btn-info btn-sm" onclick="alert('The trip cost is not set for this trip.Please wait!')">Pay bill</button>
+                                            @endif
+                                        </div>
+                                        <div>
+                                            <p style="font-family: sans-serif, Verdana;font-size:15px">"Payments are to be verified first. Don't worry when your payments don't auto sum into your trip card"</p>
                                         </div>
                                     </div>
                                 </div>
@@ -245,4 +335,26 @@
         </script>
     @endpush
 
+    @push('after-scripts')
+        <script>
+            $(document).on('click','#confirm_trip',function(){
+                var status  = data.status
+                var id = data.id
+                $.ajax({
+                    type: "GET",
+                    dataType: "JSON",
+                    url: '{{route('soloBookings.ConfirmationStatus')}}',
+                    data: {'status': status,'id':id},
+                    success: function (data) {
+                        // $('#notify').fadeIn();
+                        // $('#notify').css('background','green');
+                        // $('#notify').text('status updated successfully');
+                        // // SetTimeout(()=>{
+                        // //     $('#notify').fadeOut();
+                        // // });
+                    }
+                })
+            })
+        </script>
+    @endpush
 @endsection

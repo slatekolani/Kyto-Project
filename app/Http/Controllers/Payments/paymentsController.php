@@ -25,10 +25,30 @@ class paymentsController extends Controller
         return view('payments.index')
             ->with('tourist_booking',$tourist_booking);
     }
-    public function recent_payments_index($tourist_booking_id)
+    public function recent_payments_index($tour_operator_id)
     {
-        $tourist_booking=touristBooking::query()->where('uuid',$tourist_booking_id)->first();
+        $tour_operator=tourOperators::query()->where('uuid',$tour_operator_id)->first();
+        $tourist_booking=touristBooking::query()->where('tour_operators_id',$tour_operator->id)->first();
         return view('payments.RecentPayments.index')
+            ->with('tour_operator',$tour_operator)
+            ->with('tourist_booking',$tourist_booking);
+    }
+
+    public function verifiedTripPaymentsIndex($tour_operator_id)
+    {
+        $tour_operator=tourOperators::query()->where('uuid',$tour_operator_id)->first();
+        $tourist_booking=touristBooking::query()->where('tour_operators_id',$tour_operator->id)->first();
+        return view('Payments.VerifiedTripPayments.index')
+            ->with('tour_operator',$tour_operator)
+            ->with('tourist_booking',$tourist_booking);
+    }
+
+    public function unverifiedTripPaymentsIndex($tour_operator_id)
+    {
+        $tour_operator=tourOperators::query()->where('uuid',$tour_operator_id)->first();
+        $tourist_booking=touristBooking::query()->where('tour_operators_id',$tour_operator->id)->first();
+        return view('Payments.UnverifiedTripPayments.index')
+            ->with('tour_operator',$tour_operator)
             ->with('tourist_booking',$tourist_booking);
     }
 
@@ -109,7 +129,6 @@ class paymentsController extends Controller
         $payments->reference=$request->input('reference');
         $payments->payment_gateway=$request->input('payment_gateway');
         $payments->tour_operators_id=$request->input('tour_operators_id');
-//        $payments->tourist_bookings_id=$request->input('tourist_bookings_id');
         $payments->save();
         return redirect()->route('payments.index',$payments->touristBookings->uuid)->withFlashSuccess('Payment data successfully updated');
     }
@@ -198,10 +217,10 @@ class paymentsController extends Controller
             ->rawColumns(['buttons','status','actions','action_status'])
             ->make(true);
     }
-    public function get_recent_payments($tourist_booking_id)
+    public function get_recent_payments($tour_operator_id)
     {
-        $tourist_booking=touristBooking::query()->where('uuid',$tourist_booking_id)->first();
-        $booking_payments=payments::query()->orderBy('account_name')->where('tourist_bookings_id',$tourist_booking->id)->whereBetween('created_at',[carbon::now()->startOfWeek(),carbon::now()->endOfWeek()])->get();
+        $tour_operator=tourOperators::query()->where('uuid',$tour_operator_id)->first();
+        $booking_payments=payments::query()->orderBy('account_name')->where('tour_operators_id',$tour_operator->id)->whereBetween('created_at',[carbon::now()->startOfWeek(),carbon::now()->endOfWeek()])->get();
         return DataTables::of($booking_payments)
             ->addIndexColumn()
             ->addColumn('tourist_name',function ($booking_payments)
@@ -270,4 +289,151 @@ class paymentsController extends Controller
             ->rawColumns(['buttons','status','actions','action_status','tourist_name','phone_number','email_address'])
             ->make(true);
     }
+
+    public function getVerifiedTripPayments($tour_operator_id)
+    {
+        $tour_operator=tourOperators::query()->where('uuid',$tour_operator_id)->first();
+        $booking_payments=payments::query()->orderBy('account_name')->where('tour_operators_id',$tour_operator->id)->where('status','=',1)->get();
+        return DataTables::of($booking_payments)
+            ->addIndexColumn()
+            ->addColumn('tourist_name',function ($booking_payments)
+            {
+                return $booking_payments->touristBookings->tourist_name;
+            })
+            ->addColumn('phone_number',function ($booking_payments)
+            {
+                return $booking_payments->touristBookings->phone_number;
+            })
+            ->addColumn('email_address',function ($booking_payments)
+            {
+                return $booking_payments->touristBookings->email_address;
+            })
+            ->addColumn('date_of_booking',function ($booking_payments)
+            {
+                return date('jS M Y , H:m:s',strtotime($booking_payments->touristBookings->created_at));
+            })
+            ->addColumn('account_name',function($booking_payments)
+            {
+                return $booking_payments->account_name;
+            })
+            ->addColumn('amount',function ($booking_payments)
+            {
+                return $booking_payments->amount;
+            })
+            ->addColumn('reference',function ($booking_payments)
+            {
+                return $booking_payments->reference;
+            })
+
+            ->addColumn('payment_gateway',function ($booking_payments)
+            {
+                return paymentGateways::find($booking_payments->payment_gateway)->payment_gateway_name;
+            })
+            ->addColumn('status',function($booking_payments)
+            {
+                return $booking_payments->status;
+            })
+            ->addColumn('actions',function ($booking_payments)
+            {
+                $btn='<label class="switch{{$booking_payments->status}}">
+                          <input type="checkbox">
+                          <span class="slider round"></span>
+                        </label>';
+                return $btn;
+            })
+            ->addColumn('action_status',function ($booking_payments)
+            {
+                if($booking_payments->status==0)
+                {
+                    return '<span class="badge badge-warning">Pending</span>';
+                }
+                else
+                {
+                    return '<span class="badge badge-success">Checked</span>';
+                }
+            })
+
+            ->addColumn('buttons',function ($booking_payments)
+            {
+                $btn='<a href="'.route('payments.edit',$booking_payments->uuid).'" class="btn btn-primary btn-sm">Edit</a>';
+                $btn=$btn.'<a href="'.route('payments.delete',$booking_payments->uuid).'" class="btn btn-danger btn-sm">Delete</a>';
+                return $btn;
+            })
+            ->rawColumns(['buttons','status','actions','action_status','tourist_name','phone_number','email_address'])
+            ->make(true);
+    }
+
+    public function getUnverifiedTripPayments($tour_operator_id)
+    {
+        $tour_operator=tourOperators::query()->where('uuid',$tour_operator_id)->first();
+        $booking_payments=payments::query()->orderBy('account_name')->where('tour_operators_id',$tour_operator->id)->where('status','=',0)->get();
+        return DataTables::of($booking_payments)
+            ->addIndexColumn()
+            ->addColumn('tourist_name',function ($booking_payments)
+            {
+                return $booking_payments->touristBookings->tourist_name;
+            })
+            ->addColumn('phone_number',function ($booking_payments)
+            {
+                return $booking_payments->touristBookings->phone_number;
+            })
+            ->addColumn('email_address',function ($booking_payments)
+            {
+                return $booking_payments->touristBookings->email_address;
+            })
+            ->addColumn('date_of_booking',function ($booking_payments)
+            {
+                return date('jS M Y , H:m:s',strtotime($booking_payments->touristBookings->created_at));
+            })
+            ->addColumn('account_name',function($booking_payments)
+            {
+                return $booking_payments->account_name;
+            })
+            ->addColumn('amount',function ($booking_payments)
+            {
+                return $booking_payments->amount;
+            })
+            ->addColumn('reference',function ($booking_payments)
+            {
+                return $booking_payments->reference;
+            })
+
+            ->addColumn('payment_gateway',function ($booking_payments)
+            {
+                return paymentGateways::find($booking_payments->payment_gateway)->payment_gateway_name;
+            })
+            ->addColumn('status',function($booking_payments)
+            {
+                return $booking_payments->status;
+            })
+            ->addColumn('actions',function ($booking_payments)
+            {
+                $btn='<label class="switch{{$booking_payments->status}}">
+                          <input type="checkbox">
+                          <span class="slider round"></span>
+                        </label>';
+                return $btn;
+            })
+            ->addColumn('action_status',function ($booking_payments)
+            {
+                if($booking_payments->status==0)
+                {
+                    return '<span class="badge badge-warning">Pending</span>';
+                }
+                else
+                {
+                    return '<span class="badge badge-success">Checked</span>';
+                }
+            })
+
+            ->addColumn('buttons',function ($booking_payments)
+            {
+                $btn='<a href="'.route('payments.edit',$booking_payments->uuid).'" class="btn btn-primary btn-sm">Edit</a>';
+                $btn=$btn.'<a href="'.route('payments.delete',$booking_payments->uuid).'" class="btn btn-danger btn-sm">Delete</a>';
+                return $btn;
+            })
+            ->rawColumns(['buttons','status','actions','action_status','tourist_name','phone_number','email_address'])
+            ->make(true);
+    }
+
 }

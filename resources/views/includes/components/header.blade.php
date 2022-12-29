@@ -16,9 +16,9 @@
             @auth
                 @if(auth()->user()->hasRole(3))
                     @if(auth()->user()->getUserTourBookings()->count()>0)
-                        <a href="{{route('touristBookings.show')}}" class="btn btn-outline-primary btn-sm">Normal Bookings</a>
+                        <a href="{{route('touristBookings.show')}}" class="btn btn-outline-primary btn-sm">Custom Bookings</a>
                         @else
-                        <a href="#" onclick="alert('You have not made booking. Book please')"><button class="btn btn-outline-danger" title="No bookings made yet">Trips Booked</button></a>
+                        <a href="#" onclick="alert('You have not made booking. Book please')"><button class="btn btn-outline-danger" title="No bookings made yet">Custom Bookings</button></a>
                     @endif
                         @if(auth()->user()->getUserSoloTourBookings()->count()>0)
                             <a href="{{route('soloBookings.show')}}" class="btn btn-primary btn-sm">Solo Bookings</a>
